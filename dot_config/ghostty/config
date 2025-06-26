@@ -1,0 +1,30 @@
+
+
+window-padding-y = 12
+window-padding-x = 12
+window-height = 25
+window-width = 100
+ 
+font-family = "JetBrains Mono"
+
+palette = 0=#000000
+palette = 1=#e25822
+palette = 2=#14b37d
+palette = 3=#f2f27a
+palette = 4=#3a75c4
+palette = 5=#703faf
+palette = 6=#87d3f8
+palette = 7=#eee8d5
+palette = 8=#333333
+palette = 9=#e25822
+palette = 10=#14b37d
+palette = 11=#f2f27a
+palette = 12=#3a75c4
+palette = 13=#703faf
+palette = 14=#87d3f8
+palette = 15=#ffffff
+background = #0f111a
+foreground = #8f93a2
+cursor-color = #8f93a2
+selection-background = #eee8d5
+selection-foreground = #0f111a
