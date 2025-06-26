@@ -44,6 +44,7 @@ cask 'obsidian'
 cask 'bitwarden'
 cask 'macs-fan-control'
 cask 'whatsapp'
+cask 'logi-options+'
 
 ## App Store apps
 # mas "Slack", id: 803453959
