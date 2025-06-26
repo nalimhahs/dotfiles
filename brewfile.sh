@@ -13,6 +13,7 @@ brew 'nvm'
 brew 'bitwarden-cli'
 brew 'fzf'
 brew 'zoxide'
+brew 'oven-sh/bun/bun'
 
 # Images, Video
 brew 'ffmpeg'
@@ -39,6 +40,7 @@ cask 'orbstack'
 cask 'obsidian'
 cask 'bitwarden'
 cask 'macs-fan-control'
+cask 'whatsapp'
 
 ## App Store apps
 # mas "Slack", id: 803453959
