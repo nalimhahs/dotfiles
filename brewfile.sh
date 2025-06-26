@@ -1,6 +1,9 @@
 # Specify directory to install
 cask_args appdir: "/Applications"
 
+# Taps
+tap 'oven-sh/bun'
+
 # Install packages
 brew 'mas'
 brew 'git'
@@ -13,7 +16,7 @@ brew 'nvm'
 brew 'bitwarden-cli'
 brew 'fzf'
 brew 'zoxide'
-brew 'oven-sh/bun/bun'
+brew 'bun'
 
 # Images, Video
 brew 'ffmpeg'
@@ -44,4 +47,4 @@ cask 'whatsapp'
 
 ## App Store apps
 # mas "Slack", id: 803453959
-mas "xcode" id: 497799835
+mas "xcode", id: 497799835
