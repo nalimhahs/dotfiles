@@ -95,7 +95,7 @@ export ANDROID_HOME=$HOME/Library/Android/sdk && export PATH=$PATH:$ANDROID_HOME
 # bun completions
 [ -s "/Users/milan/.bun/_bun" ] && source "/Users/milan/.bun/_bun"
 
-# bun
+# bun 
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
