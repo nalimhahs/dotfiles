@@ -34,6 +34,7 @@ zinit light Aloxaf/fzf-tab
 zinit snippet OMZP::git
 zinit snippet OMZP::sudo
 zinit snippet OMZP::command-not-found
+zinit snippet OMZP::mise
 
 # Load completions
 autoload -Uz compinit && compinit
@@ -99,3 +100,4 @@ export ANDROID_HOME=$HOME/Library/Android/sdk && export PATH=$PATH:$ANDROID_HOME
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
+eval "$(mise activate zsh)"
