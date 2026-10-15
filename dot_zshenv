@@ -1,0 +1,45 @@
+# Paths required by interactive shells and scripts.
+typeset -U PATH path
+path=("$HOME/.local/bin" $path)
+[[ ! -r "$HOME/.cargo/env" ]] || source "$HOME/.cargo/env"
+path=("$HOME/.vite-plus/bin" $path)
+# >>> zerobrew >>>
+# zerobrew
+export ZEROBREW_DIR=/Users/milashah/.zerobrew
+export ZEROBREW_BIN=/Users/milashah/.zerobrew/bin
+export ZEROBREW_ROOT=/opt/zerobrew
+export ZEROBREW_PREFIX=/opt/zerobrew
+typeset -TU PKG_CONFIG_PATH pkg_config_path
+pkg_config_path=("$ZEROBREW_PREFIX/lib/pkgconfig" $pkg_config_path)
+export PKG_CONFIG_PATH
+
+# SSL/TLS certificates (only if ca-certificates is installed)
+if [ -z "${CURL_CA_BUNDLE:-}" ] || [ -z "${SSL_CERT_FILE:-}" ]; then
+  if [ -f "$ZEROBREW_PREFIX/opt/ca-certificates/share/ca-certificates/cacert.pem" ]; then
+    [ -z "${CURL_CA_BUNDLE:-}" ] && export CURL_CA_BUNDLE="$ZEROBREW_PREFIX/opt/ca-certificates/share/ca-certificates/cacert.pem"
+    [ -z "${SSL_CERT_FILE:-}" ] && export SSL_CERT_FILE="$ZEROBREW_PREFIX/opt/ca-certificates/share/ca-certificates/cacert.pem"
+  elif [ -f "$ZEROBREW_PREFIX/etc/ca-certificates/cacert.pem" ]; then
+    [ -z "${CURL_CA_BUNDLE:-}" ] && export CURL_CA_BUNDLE="$ZEROBREW_PREFIX/etc/ca-certificates/cacert.pem"
+    [ -z "${SSL_CERT_FILE:-}" ] && export SSL_CERT_FILE="$ZEROBREW_PREFIX/etc/ca-certificates/cacert.pem"
+  elif [ -f "$ZEROBREW_PREFIX/etc/openssl/cert.pem" ]; then
+    [ -z "${CURL_CA_BUNDLE:-}" ] && export CURL_CA_BUNDLE="$ZEROBREW_PREFIX/etc/openssl/cert.pem"
+    [ -z "${SSL_CERT_FILE:-}" ] && export SSL_CERT_FILE="$ZEROBREW_PREFIX/etc/openssl/cert.pem"
+  elif [ -f "$ZEROBREW_PREFIX/share/ca-certificates/cacert.pem" ]; then
+    [ -z "${CURL_CA_BUNDLE:-}" ] && export CURL_CA_BUNDLE="$ZEROBREW_PREFIX/share/ca-certificates/cacert.pem"
+    [ -z "${SSL_CERT_FILE:-}" ] && export SSL_CERT_FILE="$ZEROBREW_PREFIX/share/ca-certificates/cacert.pem"
+  fi
+fi
+
+if [ -z "${SSL_CERT_DIR:-}" ]; then
+  if [ -d "$ZEROBREW_PREFIX/etc/ca-certificates" ]; then
+    export SSL_CERT_DIR="$ZEROBREW_PREFIX/etc/ca-certificates"
+  elif [ -d "$ZEROBREW_PREFIX/etc/openssl/certs" ]; then
+    export SSL_CERT_DIR="$ZEROBREW_PREFIX/etc/openssl/certs"
+  elif [ -d "$ZEROBREW_PREFIX/share/ca-certificates" ]; then
+    export SSL_CERT_DIR="$ZEROBREW_PREFIX/share/ca-certificates"
+  fi
+fi
+
+path=("$ZEROBREW_PREFIX/bin" "$ZEROBREW_BIN" $path)
+
+# <<< zerobrew <<<

@@ -1,106 +1,110 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
+# Instant prompt must load before commands that can write to the terminal.
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-if [[ -f "/opt/homebrew/bin/brew" ]] then
-  # If you're using macOS, you'll want this enabled
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
+# Environment and executable paths.
+export HOMEBREW_PREFIX="/opt/homebrew"
+export HOMEBREW_CELLAR="$HOMEBREW_PREFIX/Cellar"
+export HOMEBREW_REPOSITORY="$HOMEBREW_PREFIX"
+typeset -U MANPATH manpath
+manpath=("$HOMEBREW_PREFIX/share/man" $manpath '')
+export MANPATH
+typeset -TU INFOPATH infopath
+infopath=("$HOMEBREW_PREFIX/share/info" $infopath '')
+export INFOPATH
+export BUN_INSTALL="$HOME/.bun"
+export PNPM_HOME="$HOME/Library/pnpm"
+path=(
+  "$PNPM_HOME/bin"
+  "$HOME/scripts"
+  "$HOME/java"
+  "$BUN_INSTALL/bin"
+  "$HOMEBREW_PREFIX/bin"
+  "$HOMEBREW_PREFIX/sbin"
+  $path
+  "$HOME/go/bin"
+)
 
-# Set the directory we want to store zinit and plugins
-ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+export PATH="/Users/milashah/.rd/bin:$PATH"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
 
-# Source/Load zinit
-source "${ZINIT_HOME}/zinit.zsh"
+path=("$HOME/.opencode/bin" $path)
 
-if [ ! -d "$ZINIT_HOME" ]; then
-   mkdir -p "$(dirname $ZINIT_HOME)"
-   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
-fi
+# History and key bindings.
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=5000
+SAVEHIST=$HISTSIZE
+setopt sharehistory hist_ignore_space hist_ignore_all_dups
+setopt hist_save_no_dups hist_find_no_dups
 
-# Add in Powerlevel10k
-zinit ice depth=1; zinit light romkatv/powerlevel10k
-
-# Add in zsh plugins
-zinit light zsh-users/zsh-syntax-highlighting
-zinit light zsh-users/zsh-completions
-zinit light zsh-users/zsh-autosuggestions
-zinit light Aloxaf/fzf-tab
-
-# Add in snippets
-zinit snippet OMZP::git
-zinit snippet OMZP::sudo
-zinit snippet OMZP::command-not-found
-zinit snippet OMZP::mise
-
-# Load completions
-autoload -Uz compinit && compinit
-
-zinit cdreplay -q
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# Keybindings
 bindkey -e
 bindkey '^p' history-search-backward
 bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
 
-# History
-HISTSIZE=5000
-HISTFILE=~/.zsh_history
-SAVEHIST=$HISTSIZE
-HISTDUP=erase
-setopt appendhistory
-setopt sharehistory
-setopt hist_ignore_space
-setopt hist_ignore_all_dups
-setopt hist_save_no_dups
-setopt hist_ignore_dups
-setopt hist_find_no_dups
+# Plugin manager and completion definitions.
+ZINIT_HOME="${XDG_DATA_HOME:-$HOME/.local/share}/zinit/zinit.git"
+if [[ ! -d "$ZINIT_HOME" ]]; then
+  mkdir -p "${ZINIT_HOME:h}"
+  git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
+source "$ZINIT_HOME/zinit.zsh"
+zinit light zsh-users/zsh-completions
 
-# Completion styling
+autoload -Uz compinit
+typeset -a _stale_compdumps
+_stale_compdumps=( "${ZDOTDIR:-$HOME}"/.zcompdump(N.mh+24) )
+if [[ ! -f "${ZDOTDIR:-$HOME}/.zcompdump" ]] || (( ${#_stale_compdumps} )); then
+  compinit && [[ -f "${ZDOTDIR:-$HOME}/.zcompdump" ]] && touch "${ZDOTDIR:-$HOME}/.zcompdump"
+else
+  compinit -C
+fi
+unset _stale_compdumps
+
+# Completion styles and interactive tool integrations.
 zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*' menu no
-zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
-zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color "$realpath"'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color "$realpath"'
 
-# Aliases
-alias ls='ls --color'
-alias c='clear'
-alias ll='ls -al'
-
-# Shell integrations
+zinit light Aloxaf/fzf-tab
+zinit cdreplay -q
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"
-
-export HOMEBREW_PREFIX="/opt/homebrew";
-export HOMEBREW_CELLAR="/opt/homebrew/Cellar";
-export HOMEBREW_REPOSITORY="/opt/homebrew";
-export PATH="/opt/homebrew/bin:/opt/homebrew/sbin${PATH+:$PATH}";
-export MANPATH="/opt/homebrew/share/man${MANPATH+:$MANPATH}:";
-export INFOPATH="/opt/homebrew/share/info:${INFOPATH:-}";
-
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
-export ANDROID_HOME=$HOME/Library/Android/sdk && export PATH=$PATH:$ANDROID_HOME/emulator && export PATH=$PATH:$ANDROID_HOME/platform-tools
-
-# bun completions
-[ -s "/Users/milan/.bun/_bun" ] && source "/Users/milan/.bun/_bun"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
-
-# Add scripts folder to path
-export PATH="$HOME/scripts:$PATH"
-
 eval "$(mise activate zsh)"
+if [[ -r "$HOME/.vite-plus/env" ]]; then
+  # Load Vite+ completion without changing the selected Node.js installation.
+  typeset -a _path_before_vite
+  _path_before_vite=("${path[@]}")
+  source "$HOME/.vite-plus/env"
+  path=("${_path_before_vite[@]}")
+  unset _path_before_vite
+fi
+[[ ! -s "$BUN_INSTALL/_bun" ]] || source "$BUN_INSTALL/_bun"
+
+# Prompt and plugins that run after the first prompt.
+zinit ice depth=1
+zinit light romkatv/powerlevel10k
+[[ ! -r "$HOME/.p10k.zsh" ]] || source "$HOME/.p10k.zsh"
+zinit light zsh-users/zsh-autosuggestions
+zinit ice wait'0' lucid
+zinit snippet OMZP::sudo
+zinit ice wait'0' lucid
+zinit light zsh-users/zsh-syntax-highlighting
+
+# Aliases and SSH helper.
+alias ls='ls --color'
+alias ll='ls -al'
+alias c='clear'
+alias nq=networkquality
+alias scm-ssh="$HOME/.ssh/scm-script.sh"
+
+reload-ssh() {
+  if ! ssh-add -e /usr/local/lib/opensc-pkcs11.so >/dev/null; then
+    echo "Failed to remove previous card"
+  fi
+  ssh-add -s /usr/local/lib/opensc-pkcs11.so
+}
